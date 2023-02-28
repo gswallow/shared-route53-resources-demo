@@ -49,6 +49,12 @@ variable "internal_cidr_blocks" {
   default     = ["10.0.0.0/8"]
 }
 
+variable "monitor_endpoint_query_volume" {
+  type        = bool
+  description = "Enable cloudwatch metric alerts on endpoint query volume"
+  default     = true
+}
+
 ########################################
 # Hosting VPC A
 ########################################

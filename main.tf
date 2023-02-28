@@ -325,6 +325,47 @@ resource "aws_ec2_transit_gateway_route" "default" {
 }
 
 ########################################
+# Resolver endpoint metrics
+########################################
+resource "aws_cloudwatch_metric_alarm" "inbound_endpoint_query_volume" {
+  count                     = var.monitor_endpoint_query_volume ? 1 : 0
+  alarm_name                = "${local.prefix}-route53-inbound-resolver-endpoint-query-volume"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = 1
+  datapoints_to_alarm       = 1
+  metric_name               = "InboundQueryVolume"
+  namespace                 = "AWS/Route53Resolver"
+  period                    = 60
+  statistic                 = "Average"
+  threshold                 = 9000
+  alarm_description         = "Inbound queries are OVER 9,000!"
+  insufficient_data_actions = []
+  treat_missing_data        = "notBreaching"
+  dimensions = {
+    "EndpointId"           = aws_route53_resolver_endpoint.transit_inbound.id
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "outbound_endpoint_query_volume" {
+  count                     = var.monitor_endpoint_query_volume ? 1 : 0
+  alarm_name                = "${local.prefix}-route53-outbound-resolver-endpoint-query-volume"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = 1
+  datapoints_to_alarm       = 1
+  metric_name               = "OutboundQueryAggregateVolume"
+  namespace                 = "AWS/Route53Resolver"
+  period                    = 60
+  statistic                 = "Average"
+  threshold                 = 9000
+  alarm_description         = "Outbound queries are OVER 9,000!"
+  insufficient_data_actions = []
+  treat_missing_data        = "notBreaching"
+  dimensions = {
+    "EndpointId"           = aws_route53_resolver_endpoint.vpc_transit_outbound.id
+  }
+}
+
+########################################
 # Locally generated values
 ########################################
 locals {
