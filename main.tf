@@ -50,39 +50,8 @@ resource "aws_security_group" "dns_vpc_hosting_a" {
   }
 }
 
-resource "aws_route53_resolver_endpoint" "vpc_hosting_a_outbound" {
-  name               = "${local.prefix}-transit-resolver-vpc-a-outbound"
-  direction          = "OUTBOUND"
-  security_group_ids = [aws_security_group.dns_vpc_hosting_a.id]
-
-  ip_address {
-    subnet_id = module.vpc_hosting_a.intra_subnets[0]
-    ip        = cidrhost(module.vpc_hosting_a.intra_subnets_cidr_blocks[0], 5)
-  }
-
-  ip_address {
-    subnet_id = module.vpc_hosting_a.intra_subnets[1]
-    ip        = cidrhost(module.vpc_hosting_a.intra_subnets_cidr_blocks[1], 5)
-  }
-}
-
-resource "aws_route53_resolver_rule" "default_vpc_hosting_a" {
-  domain_name          = "."
-  name                 = "default_vpc_hosting_a"
-  rule_type            = "FORWARD"
-  resolver_endpoint_id = aws_route53_resolver_endpoint.vpc_hosting_a_outbound.id
-
-  target_ip {
-    ip = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[0], 6)
-  }
-
-  target_ip {
-    ip = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[1], 6)
-  }
-}
-
 resource "aws_route53_resolver_rule_association" "default_vpc_hosting_a" {
-  resolver_rule_id = aws_route53_resolver_rule.default_vpc_hosting_a.id
+  resolver_rule_id = aws_route53_resolver_rule.default_override.id
   vpc_id           = module.vpc_hosting_a.vpc_id
 }
 
@@ -154,39 +123,8 @@ resource "aws_security_group" "dns_vpc_hosting_b" {
   }
 }
 
-resource "aws_route53_resolver_endpoint" "vpc_hosting_b_outbound" {
-  name               = "${local.prefix}-transit-resolver-vpc-b-outbound"
-  direction          = "OUTBOUND"
-  security_group_ids = [aws_security_group.dns_vpc_hosting_b.id]
-
-  ip_address {
-    subnet_id = module.vpc_hosting_b.intra_subnets[0]
-    ip        = cidrhost(module.vpc_hosting_b.intra_subnets_cidr_blocks[0], 5)
-  }
-
-  ip_address {
-    subnet_id = module.vpc_hosting_b.intra_subnets[1]
-    ip        = cidrhost(module.vpc_hosting_b.intra_subnets_cidr_blocks[1], 5)
-  }
-}
-
-resource "aws_route53_resolver_rule" "default_vpc_hosting_b" {
-  domain_name          = "."
-  name                 = "default_vpc_hosting_b"
-  rule_type            = "FORWARD"
-  resolver_endpoint_id = aws_route53_resolver_endpoint.vpc_hosting_b_outbound.id
-
-  target_ip {
-    ip = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[0], 6)
-  }
-
-  target_ip {
-    ip = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[1], 6)
-  }
-}
-
 resource "aws_route53_resolver_rule_association" "default_vpc_hosting_b" {
-  resolver_rule_id = aws_route53_resolver_rule.default_vpc_hosting_b.id
+  resolver_rule_id = aws_route53_resolver_rule.default_override.id
   vpc_id           = module.vpc_hosting_b.vpc_id
 }
 
@@ -275,6 +213,11 @@ resource "aws_route53_resolver_endpoint" "transit_inbound" {
     subnet_id = module.vpc_transit.private_subnets[1]
     ip        = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[1], 6)
   }
+
+  ip_address {
+    subnet_id = module.vpc_transit.private_subnets[2]
+    ip        = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[2], 6)
+  }
 }
 
 resource "aws_route53_resolver_endpoint" "vpc_transit_outbound" {
@@ -290,6 +233,30 @@ resource "aws_route53_resolver_endpoint" "vpc_transit_outbound" {
   ip_address {
     subnet_id = module.vpc_transit.private_subnets[1]
     ip        = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[1], 5)
+  }
+
+  ip_address {
+    subnet_id = module.vpc_transit.private_subnets[2]
+    ip        = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[2], 5)
+  }
+}
+
+resource "aws_route53_resolver_rule" "default_override" {
+  domain_name          = "."
+  name                 = "default_override"
+  rule_type            = "FORWARD"
+  resolver_endpoint_id = aws_route53_resolver_endpoint.vpc_transit_outbound.id
+
+  target_ip {
+    ip = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[0], 6)
+  }
+
+  target_ip {
+    ip = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[1], 6)
+  }
+
+  target_ip {
+    ip = cidrhost(module.vpc_transit.private_subnets_cidr_blocks[2], 6)
   }
 }
 
