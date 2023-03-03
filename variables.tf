@@ -56,74 +56,92 @@ variable "monitor_endpoint_query_volume" {
 }
 
 ########################################
-# Hosting VPC A
+# Primary Hosting VPC
 ########################################
-variable "vpc_hosting_a_cidr_block" {
+variable "primary_vpc_identifier" { 
+  type        = string
+  description = "An identifier used to different VPCs"
+  default     = "a"
+}
+
+variable "vpc_hosting_primary_cidr_block" {
   type        = string
   description = "The CIDR block of Hosting VPC A"
   default     = "10.120.0.0/16"
 }
 
-variable "vpc_hosting_a_azs" {
+variable "vpc_hosting_primary_azs" {
   type        = list(string)
   description = "The list of AZs in which to create subnets"
   default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
 
-variable "vpc_hosting_a_public_subnet_cidr_blocks" {
+variable "vpc_hosting_primary_public_subnet_cidr_blocks" {
   type        = list(string)
   description = "The CIDR blocks to apply to each subnet"
   default     = ["10.120.0.0/24", "10.120.1.0/24", "10.120.2.0/24"]
 }
 
-variable "vpc_hosting_a_intra_subnet_cidr_blocks" {
+variable "vpc_hosting_primary_intra_subnet_cidr_blocks" {
   type        = list(string)
   description = "The CIDR blocks to apply to each subnet"
   default     = ["10.120.16.0/20", "10.120.32.0/20", "10.120.48.0/20"]
 }
 
-variable "private_hosted_zone_a" {
+variable "private_hosted_zone_primary" {
   type        = string
   description = "The private hosted zone to use with VPC A"
   default     = "a.gregonaws.net"
 }
 
 ########################################
-# Hosting VPC B
+# Secondary Hosting VPC
 ########################################
-variable "vpc_hosting_b_cidr_block" {
+variable "secondary_vpc_identifier" { 
+  type        = string
+  description = "An identifier used to different VPCs"
+  default     = "b"
+}
+
+variable "vpc_hosting_secondary_cidr_block" {
   type        = string
   description = "The CIDR block of Hosting VPC A"
   default     = "10.121.0.0/16"
 }
 
-variable "vpc_hosting_b_azs" {
+variable "vpc_hosting_secondary_azs" {
   type        = list(string)
   description = "The list of AZs in which to create subnets"
   default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
 
-variable "vpc_hosting_b_public_subnet_cidr_blocks" {
+variable "vpc_hosting_secondary_public_subnet_cidr_blocks" {
   type        = list(string)
   description = "The CIDR blocks to apply to each subnet"
   default     = ["10.121.0.0/24", "10.121.1.0/24", "10.121.2.0/24"]
 }
 
-variable "vpc_hosting_b_intra_subnet_cidr_blocks" {
+variable "vpc_hosting_secondary_intra_subnet_cidr_blocks" {
   type        = list(string)
   description = "The CIDR blocks to apply to each subnet"
   default     = ["10.121.16.0/20", "10.121.32.0/20", "10.121.48.0/20"]
 }
 
-variable "private_hosted_zone_b" {
+variable "private_hosted_zone_secondary" {
   type        = string
   description = "The private hosted zone to use with VPC B"
   default     = "b.gregonaws.net"
 }
 
 ########################################
-# Transit VPC A
+# Transit VPC
 ########################################
+variable "transit_vpc_identifier" { 
+  type        = string
+  description = "An identifier used to different VPCs"
+  default     = "transit"
+}
+
 variable "vpc_transit_cidr_block" {
   type        = string
   description = "The CIDR block of Transit VPC A"
